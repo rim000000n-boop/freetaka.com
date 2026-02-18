@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV666.COM | Premium Casino</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #042f2e; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        .sidebar { background-color: #064e3b; width: 240px; height: 100vh; position: fixed; border-right: 1px solid #065f46; }
+        .main-content { margin-left: 240px; padding: 20px; }
+        .gold-text { color: #fbbf24; }
+        .gold-bg { background-color: #fbbf24; }
+        .banner-gradient { background: linear-gradient(90deg, #065f46 0%, #042f2e 100%); border-radius: 15px; }
+        .multiplier-text { font-size: 80px; font-weight: 800; text-shadow: 0px 0px 20px rgba(251, 191, 36, 0.5); }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar hidden md:block">
+        <div class="p-6 text-2xl font-bold gold-text">CV666.COM</div>
+        <nav class="mt-4 px-4">
+            <a href="#" class="flex items-center p-3 mb-2 bg-black/20 rounded-lg text-emerald-400">
+                <i class="fas fa-fire mr-3"></i> গরম খেলা
+            </a>
+            <a href="#" class="flex items-center p-3 mb-2 hover:bg-black/10 rounded-lg">
+                <i class="fas fa-gift mr-3"></i> অফার
+            </a>
+            <a href="#" class="flex items-center p-3 mb-2 hover:bg-black/10 rounded-lg">
+                <i class="fas fa-crown mr-3"></i> ভিআইপি
+            </a>
+            <a href="#" class="flex items-center p-3 mb-2 hover:bg-black/10 rounded-lg">
+                <i class="fas fa-headset mr-3"></i> লাইভ চ্যাট
+            </a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <header class="flex justify-between items-center mb-6">
+            <button class="md:hidden text-2xl"><i class="fas fa-bars"></i></button>
+            <div class="ml-auto space-x-3">
+                <button class="bg-emerald-800 border border-emerald-600 px-6 py-2 rounded-lg font-semibold">লগইন</button>
+                <button class="gold-bg text-black px-6 py-2 rounded-lg font-bold shadow-lg">নিবন্ধন করুন</button>
+            </div>
+        </header>
+
+        <div class="banner-gradient p-8 mb-8 flex justify-between items-center border border-emerald-500/30">
+            <div>
+                <h2 class="text-3xl font-bold mb-2">RAMADAN HOLY MOON EVENT</h2>
+                <p class="text-emerald-200">১০,০০০ টাকা পর্যন্ত নগদ পুরস্কার জিতে নিন!</p>
+                <button class="mt-4 bg-yellow-500 text-black px-6 py-2 rounded font-bold">অংশ নিন</button>
+            </div>
+            <img src="https://i.ibb.co/pLpM8pY/ramadan-banner.png" alt="Ramadan" class="h-32 opacity-80">
+        </div>
+
+        <div class="bg-black/40 p-10 rounded-2xl border border-emerald-500/20 text-center backdrop-blur-md">
+            <div id="multiplier" class="multiplier-text gold-text mb-6">1.00x</div>
+            
+            <div class="flex flex-col md:flex-row justify-center items-center gap-4">
+                <div class="bg-black/60 p-1 rounded-lg border border-emerald-700">
+                    <input type="number" id="betAmount" class="bg-transparent p-3 w-40 outline-none text-white" placeholder="বেট পরিমাণ">
+                </div>
+                <button id="cashoutBtn" class="bg-red-600 hover:bg-red-500 px-12 py-4 rounded-full font-black text-2xl shadow-xl transition-all">CASH OUT</button>
+            </div>
+        </div>
+
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white/95 p-5 rounded-xl flex items-center justify-between shadow-lg">
+                <div class="flex items-center">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/88/Bkash_logo.png" class="h-10 mr-4">
+                    <span class="text-black font-bold text-lg">bKash VIP | SUR</span>
+                </div>
+                <button class="bg-pink-600 text-white px-4 py-1 rounded text-sm font-bold">ডিপোজিট</button>
+            </div>
+            <div class="bg-white/95 p-5 rounded-xl flex items-center justify-between shadow-lg">
+                <div class="flex items-center">
+                    <img src="https://i.ibb.co/S6p6X6y/nagad-logo.png" class="h-10 mr-4">
+                    <span class="text-black font-bold text-lg">NAGAD VIP | SUR</span>
+                </div>
+                <button class="bg-orange-600 text-white px-4 py-1 rounded text-sm font-bold">ডিপোজিট</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Socket.io Client Setup
+        const socket = io();
+        const multDisplay = document.getElementById('multiplier');
+        const cashoutBtn = document.getElementById('cashoutBtn');
+
+        socket.on('multiplier_update', (data) => {
+            multDisplay.innerText = data.val.toFixed(2) + 'x';
+            multDisplay.classList.remove('text-red-500');
+            multDisplay.classList.add('gold-text');
+            cashoutBtn.disabled = false;
+            cashoutBtn.style.opacity = "1";
+        });
+
+        socket.on('crashed', (data) => {
+            multDisplay.innerText = 'CRASHED @ ' + data.final.toFixed(2) + 'x';
+            multDisplay.classList.remove('gold-text');
+            multDisplay.classList.add('text-red-500');
+            cashoutBtn.disabled = true;
+            cashoutBtn.style.opacity = "0.5";
+        });
+    </script>
+</body>
+</html>
+
+
